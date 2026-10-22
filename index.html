@@ -127,7 +127,7 @@ const SEGLABEL = {'Field East':'Field East','Field West':'Field West','Inside':'
 const SEATS = RAW.map(r => ({tower:r[0], seat:r[1], ae:r[2], manager:r[3], channel:r[4], segment:r[5], role:r[6],
   rev:{jul:r[7],aug:r[8],sep:r[9],oct:r[10]}, cust:{jul:r[11],aug:r[12],sep:r[13],oct:r[14]}}));
 const MANAGERS = [...new Set(SEATS.map(s => s.manager))].sort();
-const CHANNELS = [...new Set(SEATS.map(s => s.channel))].sort();
+const CHANNEL_OPTIONS = [['Field East','Field Region East'],['Field West','Field Region West'],['Inside','Inside'],['Majors','Majors']];
 
 const st = {tower:'Marketplace', from:'jul', to:'oct', manager:'All', channel:'All', q:'', key:'rank', dir:'asc'};
 const $ = id => document.getElementById(id);
@@ -175,7 +175,7 @@ function init() {
   $('from').replaceChildren(...MONTHS.map(m => new Option(MN[m], m)));
   $('to').replaceChildren(...MONTHS.map(m => new Option(MN[m], m)));
   $('manager').replaceChildren(new Option('All managers', 'All'), ...MANAGERS.map(m => new Option(m, m)));
-  $('channel').replaceChildren(new Option('All channels', 'All'), ...CHANNELS.map(c => new Option(c, c)));
+  $('channel').replaceChildren(new Option('All channels', 'All'), ...CHANNEL_OPTIONS.map(c => new Option(c[1], c[0])));
   $('tabs').replaceChildren(...TOWERS.map(t => {
     const b = document.createElement('button');
     b.className = 'tab'; b.type = 'button'; b.setAttribute('role', 'tab'); b.dataset.tower = t;
@@ -255,7 +255,7 @@ function draw() {
   });
 
   const inScope = all.filter(r => manager === 'All' || r.manager === manager);
-  const rows = inScope.filter(r => (channel === 'All' || r.channel === channel) && (!st.q || (r.seat + ' ' + r.ae + ' ' + r.manager).toLowerCase().includes(st.q)));
+  const rows = inScope.filter(r => (channel === 'All' || r.segment === channel) && (!st.q || (r.seat + ' ' + r.ae + ' ' + r.manager).toLowerCase().includes(st.q)));
   const dir = st.dir === 'asc' ? 1 : -1;
   const val = r => r[st.key] == null ? -Infinity : r[st.key];
   rows.sort((a, b) => {
